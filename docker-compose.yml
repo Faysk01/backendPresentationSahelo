@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: tracker_db
+    restart: always
+    environment:
+      POSTGRES_USER: tracker_admin
+      POSTGRES_PASSWORD: tracker_secure_password
+      POSTGRES_DB: tracker_db
+    ports:
+      # J'utilise 5434 pour éviter tout conflit avec votre ancien projet SahelA
+      - "5435:5432"
+    volumes:
+      - tracker_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  tracker_postgres_data:

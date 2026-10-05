@@ -1,0 +1,78 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+}
+
+// 1. TABLEAU DE BORD (Statistiques + Avancées éditables dynamiquement)
+model DashboardStat {
+  id            String   @id @default(uuid())
+  progress      Int      @default(28)
+  activePhase   String   @default("Mois 1 : Structuration Juridique & Code")
+  daysLeft      Int      @default(75)
+  goal          String   @default("Objectif Go-Live : Trimestre prochain")
+  
+  // 🚀 NOUVEAU : Un tableau dynamique (JSON) pour stocker une infinité d'avancées !
+  advances      Json     @default("[]")
+
+  updatedAt     DateTime @updatedAt
+}
+
+// 2. TÂCHES (Le Kanban au quotidien : ON NE TOUCHE PLUS, IL EST PARFAIT)
+model Task {
+  id          String       @id @default(uuid())
+  title       String
+  description String?      @db.Text
+  status      TaskStatus   @default(TODO)
+  assignee    String?      
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+// 3. BUDGET & STATUTS FINANCIERS
+model BudgetItem {
+  id          String   @id @default(uuid())
+  label       String   
+  amount      Float    
+  status      String   
+  isExpense   Boolean  @default(true) 
+  notes       String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// 4. PRÉSENTATION INVESTISSEURS (Pitch)
+model PitchContent {
+  id          String   @id @default(uuid())
+  title       String   @default("FinTech Connect")
+  tagline     String   @default("Réinventer le transfert d'argent vers l'Afrique.")
+  content1    String   @db.Text 
+  content2    String   @db.Text 
+  updatedAt   DateTime @updatedAt
+}
+
+// 5. CHRONOGRAMME (100% indépendant)
+model TimelineEvent {
+  id          String   @id @default(uuid())
+  monthGroup  String   // ex: "Mois 1 - Structuration"
+  weekLabel   String   // ex: "Semaine 1" ou "Semaine 2 (Actuelle)"
+  
+  adminText   String   @db.Text // Ce qu'on doit faire en Admin
+  adminStatus String   @default("Planifié") // "Terminé", "En cours", "Planifié"
+  
+  techText    String   @db.Text // Ce qu'on doit faire en Tech
+  techStatus  String   @default("Planifié") // "Terminé", "En cours", "Planifié"
+
+  orderIndex  Int      @default(0) // Pour trier (1, 2, 3...)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
