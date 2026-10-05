@@ -9,41 +9,47 @@ export class BudgetController {
     this.delete = this.delete.bind(this);
   }
 
-  async getAll(req: Request, res: Response) {
+  async getAll(req: Request, res: Response): Promise<void> {
     try {
       const items = await budgetService.getAllItems();
       res.status(200).json(items);
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Erreur serveur.";
+      res.status(500).json({ error: message });
     }
   }
 
-  async create(req: Request, res: Response) {
+  async create(req: Request, res: Response): Promise<void> {
     try {
       const item = await budgetService.createItem(req.body);
       res.status(201).json(item);
-    } catch (error: any) {
-      res.status(400).json({ error: error.message });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Erreur de création.";
+      res.status(400).json({ error: message });
     }
   }
 
-  async update(req: Request, res: Response) {
+  async update(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      // 🛡️ CORRECTION : On extrait l'ID et on force le type string pour rassurer TypeScript
+      const id = req.params.id as string;
       const item = await budgetService.updateItem(id, req.body);
       res.status(200).json(item);
-    } catch (error: any) {
-      res.status(400).json({ error: "Erreur de mise à jour" });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Erreur de mise à jour.";
+      res.status(400).json({ error: message });
     }
   }
 
-  async delete(req: Request, res: Response) {
+  async delete(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      // 🛡️ CORRECTION : Même chose ici pour la suppression
+      const id = req.params.id as string;
       await budgetService.deleteItem(id);
       res.status(200).json({ success: true, message: "Ligne de budget supprimée" });
-    } catch (error: any) {
-      res.status(400).json({ error: "Erreur de suppression" });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Erreur de suppression.";
+      res.status(400).json({ error: message });
     }
   }
 }

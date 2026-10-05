@@ -15,8 +15,9 @@ export class TaskController {
     try {
       const tasks = await taskService.getAllTasks();
       res.status(200).json(tasks);
-    } catch (error: any) {
-      res.status(500).json({ error: error.message || "Erreur serveur lors de la récupération." });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Erreur serveur lors de la récupération.";
+      res.status(500).json({ error: message });
     }
   }
 
@@ -24,31 +25,33 @@ export class TaskController {
     try {
       const task = await taskService.createTask(req.body);
       res.status(201).json(task);
-    } catch (error: any) {
-      // Le frontend affichera exactement cette erreur si la création échoue
-      res.status(400).json({ error: error.message || "Erreur de création." });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Erreur de création.";
+      res.status(400).json({ error: message });
     }
   }
 
   async updateTask(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      // 🛡️ CORRECTION : On force le type string pour l'ID
+      const id = req.params.id as string;
       const task = await taskService.updateTask(id, req.body);
       res.status(200).json(task);
-    } catch (error: any) {
-      // 🚀 AMÉLIORATION : On expose la vraie erreur ici
-      res.status(400).json({ error: error.message || "Erreur lors de la mise à jour." });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Erreur lors de la mise à jour.";
+      res.status(400).json({ error: message });
     }
   }
 
   async deleteTask(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      // 🛡️ CORRECTION : On force le type string pour l'ID
+      const id = req.params.id as string;
       await taskService.deleteTask(id);
       res.status(200).json({ success: true, message: "Tâche supprimée avec succès." });
-    } catch (error: any) {
-      // 🚀 AMÉLIORATION : On expose la vraie erreur ici
-      res.status(400).json({ error: error.message || "Erreur lors de la suppression." });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Erreur lors de la suppression.";
+      res.status(400).json({ error: message });
     }
   }
 }
