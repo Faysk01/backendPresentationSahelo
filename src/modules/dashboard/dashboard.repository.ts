@@ -1,4 +1,4 @@
-import { prisma } from '../../services/prisma.service';
+import { prisma } from '../services/prisma.service';
 import { Prisma } from '@prisma/client';
 
 export class DashboardRepository {
